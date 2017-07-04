@@ -1,0 +1,19 @@
+{
+  "name": "computerv1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amoinier/computerV1.git"
+  },
+  "author": "amoinier",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/amoinier/computerV1/issues"
+  },
+  "homepage": "https://github.com/amoinier/computerV1#readme"
+}
