@@ -22,12 +22,20 @@ function main() {
 				delete degree[1][second]
 			}
 		}
-		reduc += (first != Object.keys(degree[0])[0] ? " + " : "")
-		reduc += parseFloat(degree[0][first].symbol + degree[0][first].equ);
-		reduc += (degree[0][first].power >= 2 ? "*X^" + degree[0][first].power : (degree[0][first].power == 1 ? "*X" : ""))
+
 	}
 
-	console.log("Reduced form: " + reduc + " = 0");
+	degree = cleanDegree(degree);
+
+	for (var first in degree[0]) {
+		if (parseFloat(degree[0][first].equ)) {
+			reduc += (first != Object.keys(degree[0])[0] ? degree[0][first].symbol + " " : "")
+			reduc += parseFloat(degree[0][first].equ);
+			reduc += (degree[0][first].power >= 2 ? " * X^" + degree[0][first].power + " " : (degree[0][first].power == 1 ? " * X " : ""))
+		}
+	}
+
+	console.log("Reduced form: " + reduc + "= 0");
 	console.log("Polynomial degree: " + getPolynomialDegree(degree));
 
 	getResult(degree);
@@ -197,6 +205,20 @@ function getResult(degree) {
 		console.log("The polynomial degree is stricly greater than 2, I can't solve.");
 		process.exit(1)
 	}
+}
+
+function cleanDegree(degree) {
+	var keys = Object.keys(degree[1]);
+
+	if (keys.length != 0) {
+		for (var x = 0; x < keys.length; x++) {
+			degree[0][keys] = degree[1][keys];
+			degree[0][keys].symbol = (degree[0][keys].symbol == "+" ? "-" : "+");
+			delete degree[1][keys]
+		}
+	}
+
+	return degree;
 }
 
 
