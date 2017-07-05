@@ -45,15 +45,17 @@ function main(argv) {
 
 	degree = cleanDegree(degree);
 
+	var countReduc = 0;
 	for (var first in degree[0]) {
 		if (parseFloat(degree[0][first].equ)) {
-			reduc += (first != Object.keys(degree[0])[0] ? degree[0][first].symbol + " " : "")
+			reduc += ((countReduc && degree[0][first].equ) || degree[0][first].symbol == "-" ? degree[0][first].symbol + " " : "")
 			reduc += (parseFloat(degree[0][first].equ) != 1 || first == 0 ? parseFloat(degree[0][first].equ) + " " : "");
-			reduc += (degree[0][first].power >= 2 ? (parseFloat(degree[0][first].equ) == 1 ? "X^" : " * X^") + degree[0][first].power + " " : (degree[0][first].power == 1 ? (parseFloat(degree[0][first].equ) == 1 ? "X " : " * X ") : ""))
+			reduc += (degree[0][first].power >= 2 ? (parseFloat(degree[0][first].equ) == 1 ? "X^" : "* X^") + degree[0][first].power + " " : (degree[0][first].power == 1 ? (parseFloat(degree[0][first].equ) == 1 ? "X " : "* X ") : ""))
+			countReduc++;
 		}
 	}
 
-	console.log("Reduced form: " + reduc + "= 0");
+	console.log("Reduced form: " + (reduc == "" ? "0 " : reduc) + "= 0");
 	console.log("Polynomial degree: " + getPolynomialDegree(degree));
 
 	getResult(degree);
@@ -86,14 +88,14 @@ function getArgv(argv) {
 	}
 
 	if (equation.length != 1) {
-		console.log("Equation invalide ou trop d'equations en parametre")
+		console.log("Invalid or too mush parameters")
 		process.exit(0)
 	}
 
 	equation = equation[0].replace(/\s/g, '').split('=');
 
 	if (equation.length != 2 ) {
-		console.log("Equation invalide")
+		console.log("Invalid")
 		process.exit(0)
 	}
 
@@ -127,6 +129,14 @@ function parseDegree(equation) {
 					symbol: "+",
 					power: "0",
 					equ: parseFloat(array[j]),
+				}
+			}
+
+			if (array[j] == "X") {
+				degree[x][1] = {
+					symbol: "+",
+					power: "1",
+					equ: 1,
 				}
 			}
 		}
@@ -243,7 +253,12 @@ function getResult(degree) {
 		process.exit(1)
 	}
 	else if (getPolynomialDegree(degree) == 0) {
-		console.log("The polynomial degree is 0, the solution is all numbers");
+		if (degree[0][0].equ != 0) {
+			console.log("The polynomial degree is 0, the solution is impossible");
+		}
+		else {
+			console.log("The polynomial degree is 0, the solution is all reals numbers");
+		}
 		process.exit(1)
 	}
 	else {
