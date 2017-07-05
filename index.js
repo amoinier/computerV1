@@ -177,25 +177,25 @@ function getResult(degree) {
 		var a = parseFloat(degree[0][1].symbol + degree[0][1].equ);
 		var b = parseFloat(degree[0][0].symbol + degree[0][0].equ) * -1;
 
-		console.log(b);
-		console.log(a);
-
 		if (b && a)
 			xValue = (b/a);
 		else if (!b && a)
 			xValue = 0;
 		else if (!a && b)
-		xValue = ("No solution");
+			xValue = ("No solution");
 		else
 			xValue = "All numbers";
 
 		console.log("There is one solution: " + xValue);
+		process.exit(1)
 	}
 	else if (getPolynomialDegree(degree) == 0) {
 		console.log("The polynomial degree is 0 (is it possible ?), the solution is all numbers");
+		process.exit(1)
 	}
 	else {
 		console.log("The polynomial degree is stricly greater than 2, I can't solve.");
+		process.exit(1)
 	}
 }
 
