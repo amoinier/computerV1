@@ -118,10 +118,12 @@ function parseDegree(equation) {
 		for (var j = 0; j < array.length; j++) {
 			var index = equation[x][equation[x].indexOf(array[j]) - 1];
 
-			degree[x][parseFloat(array[j].match(/X\^([0-9])/) ? array[j].match(/X\^([0-9])/)[1] : 0)] = {
-				symbol: index && index.match(/[\-\+]/g) ? index : '+',
-				power: parseFloat(array[j].match(/X\^([0-9])/) ? array[j].match(/X\^([0-9])/)[1] : 0),
-				equ: (array[j].split('*X^').length >= 2 ? array[j].split('*X^')[0] : 1),
+			if (array[j].match(/X\^([0-9])/)) {
+				degree[x][parseFloat(array[j].match(/X\^([0-9])/) ? array[j].match(/X\^([0-9])/)[1] : 0)] = {
+					symbol: index && index.match(/[\-\+]/g) ? index : '+',
+					power: parseFloat(array[j].match(/X\^([0-9])/) ? array[j].match(/X\^([0-9])/)[1] : 0),
+					equ: (array[j].split('*X^').length >= 2 ? array[j].split('*X^')[0] : 1),
+				}
 			}
 
 			if (parseFloat(array[j]) == array[j]) {
@@ -243,11 +245,11 @@ function getResult(degree) {
 			}
 		}
 		else if (!b && a)
-			xValue = 0;
+		xValue = 0;
 		else if (!a && b)
-			xValue = ("No solution");
+		xValue = ("No solution");
 		else
-			xValue = "All numbers";
+		xValue = "All numbers";
 
 		console.log("There is one solution: " + xValue);
 		process.exit(1)
@@ -286,7 +288,7 @@ function sqrt(int) {
 	var index = 0;
 
 	if (int < 0)
-		int *= -1;
+	int *= -1;
 
 	while(index * index < int) {
 		index += 0.0001;
