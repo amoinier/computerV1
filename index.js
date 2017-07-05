@@ -1,12 +1,30 @@
-main();
+if (stdinOrArgv().length == 0) {
+	process.stdin.resume();
+	process.stdin.setEncoding('utf8');
 
-function main() {
+	var stdinEquation = [];
+
+	process.stdin.on('data', function(chunk) {
+		stdinEquation = chunk.split("\n");
+
+		main(stdinEquation);
+		process.stdin.pause();
+	});
+
+	process.stdin.on('end', function() {
+	});
+}
+else {
+	main();
+}
+
+function main(argv) {
 	var equation = [];
 	var reduc = "";
 	var degree = [];
 	var xValue;
 
-	equation = getArgv();
+	equation = getArgv(argv);
 	degree = parseDegree(equation);
 
 	for (var first in degree[0]) {
@@ -30,7 +48,7 @@ function main() {
 	for (var first in degree[0]) {
 		if (parseFloat(degree[0][first].equ)) {
 			reduc += (first != Object.keys(degree[0])[0] ? degree[0][first].symbol + " " : "")
-			reduc += (parseFloat(degree[0][first].equ) != 1 ? parseFloat(degree[0][first].equ) + " " : "");
+			reduc += (parseFloat(degree[0][first].equ) != 1 || first == 0 ? parseFloat(degree[0][first].equ) + " " : "");
 			reduc += (degree[0][first].power >= 2 ? (parseFloat(degree[0][first].equ) == 1 ? "X^" : " * X^") + degree[0][first].power + " " : (degree[0][first].power == 1 ? (parseFloat(degree[0][first].equ) == 1 ? "X " : " * X ") : ""))
 		}
 	}
@@ -41,15 +59,29 @@ function main() {
 	getResult(degree);
 }
 
-
-
-
-function getArgv() {
+function stdinOrArgv() {
 	var equation = [];
 
 	for (var x = 0; x < process.argv.length; x++) {
 		if (process.argv[x].match(/[0-9X *+-\/=^]/g) && process.argv[x].match(/[0-9X *+-\/=^]/g).length == process.argv[x].length) {
 			equation.push(process.argv[x])
+		}
+	}
+
+	return equation;
+}
+
+
+function getArgv(argv) {
+	var equation = [];
+
+	if (!argv) {
+		argv = process.argv;
+	}
+
+	for (var x = 0; x < argv.length; x++) {
+		if (argv[x].match(/[0-9X *+-\/=^]/g) && argv[x].match(/[0-9X *+-\/=^]/g).length == argv[x].length) {
+			equation.push(argv[x])
 		}
 	}
 
@@ -87,7 +119,15 @@ function parseDegree(equation) {
 			degree[x][parseFloat(array[j].match(/X\^([0-9])/) ? array[j].match(/X\^([0-9])/)[1] : 0)] = {
 				symbol: index && index.match(/[\-\+]/g) ? index : '+',
 				power: parseFloat(array[j].match(/X\^([0-9])/) ? array[j].match(/X\^([0-9])/)[1] : 0),
-				equ: array[j].split('*X^')[0],
+				equ: (array[j].split('*X^').length >= 2 ? array[j].split('*X^')[0] : 1),
+			}
+
+			if (parseFloat(array[j]) == array[j]) {
+				degree[x][0] = {
+					symbol: "+",
+					power: "0",
+					equ: parseFloat(array[j]),
+				}
 			}
 		}
 	}
@@ -136,7 +176,7 @@ function getPolynomialDegree(degree) {
 	var keys = Object.keys(degree[0]);
 
 	for (var x = 0; x < keys.length; x++) {
-		if (keys[x] > poly) {
+		if (keys[x] > poly && degree[0][keys[x]].equ > 0) {
 			poly = keys[x];
 		}
 	}
@@ -203,7 +243,7 @@ function getResult(degree) {
 		process.exit(1)
 	}
 	else if (getPolynomialDegree(degree) == 0) {
-		console.log("The polynomial degree is 0 (is it possible ?), the solution is all numbers");
+		console.log("The polynomial degree is 0, the solution is all numbers");
 		process.exit(1)
 	}
 	else {
