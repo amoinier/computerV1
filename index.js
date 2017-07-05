@@ -30,8 +30,8 @@ function main() {
 	for (var first in degree[0]) {
 		if (parseFloat(degree[0][first].equ)) {
 			reduc += (first != Object.keys(degree[0])[0] ? degree[0][first].symbol + " " : "")
-			reduc += parseFloat(degree[0][first].equ);
-			reduc += (degree[0][first].power >= 2 ? " * X^" + degree[0][first].power + " " : (degree[0][first].power == 1 ? " * X " : ""))
+			reduc += (parseFloat(degree[0][first].equ) != 1 ? parseFloat(degree[0][first].equ) + " " : "");
+			reduc += (degree[0][first].power >= 2 ? (parseFloat(degree[0][first].equ) == 1 ? "X^" : " * X^") + degree[0][first].power + " " : (degree[0][first].power == 1 ? (parseFloat(degree[0][first].equ) == 1 ? "X " : " * X ") : ""))
 		}
 	}
 
@@ -175,7 +175,7 @@ function getResult(degree) {
 			}
 
 			if (((xValue[1] % 1) + "").length > 4) {
-				xValue[1] = (((abc.b * -1) + (parseInt(sqrt(disc) * 100) / 100)) + " / " + (2 * abc.a))
+				xValue[1] = (parseInt(((abc.b * -1) + (parseInt(sqrt(disc) * 100) / 100)) * 100) / 100 + " / " + (2 * abc.a))
 			}
 			console.log("Discriminant is strictly positive, there are two solution: " + xValue.join(" ; "));
 
@@ -185,8 +185,13 @@ function getResult(degree) {
 		var a = parseFloat(degree[0][1].symbol + degree[0][1].equ);
 		var b = parseFloat(degree[0][0].symbol + degree[0][0].equ) * -1;
 
-		if (b && a)
+		if (b && a) {
 			xValue = (b/a);
+
+			if (((xValue % 1) + "").length > 4) {
+				xValue = b + " / " + a;
+			}
+		}
 		else if (!b && a)
 			xValue = 0;
 		else if (!a && b)
