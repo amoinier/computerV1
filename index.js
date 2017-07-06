@@ -69,10 +69,8 @@ function main(argv) {
 function stdinOrArgv() {
 	var equation = [];
 
-	for (var x = 0; x < process.argv.length; x++) {
-		if (process.argv[x].match(/[0-9X *+-\/=^]/g) && process.argv[x].match(/[0-9X *+-\/=^]/g).length == process.argv[x].length) {
-			equation.push(process.argv[x])
-		}
+	if (process.argv[2]) {
+		equation.push(process.argv[2])
 	}
 
 	return equation;
