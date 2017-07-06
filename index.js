@@ -121,13 +121,18 @@ function parseDegree(equation) {
 
 		degree[x] = degree[x] || {};
 		for (var j = 0; j < array.length; j++) {
+			if (array[j].match(/X/g).length > 1) {
+				console.log("Bad equation");
+				process.exit(0);
+			}
+
 			var index = equation[x][equation[x].indexOf(array[j]) - 1];
 
 			if (array[j].match(/X\^([0-9])/)) {
 				degree[x][parseFloat(array[j].match(/X\^([0-9])/) ? array[j].match(/X\^([0-9])/)[1] : 0)] = {
 					symbol: index && index.match(/[\-\+]/g) ? index : '+',
 					power: parseFloat(array[j].match(/X\^([0-9])/) ? array[j].match(/X\^([0-9])/)[1] : 0),
-					equ: (array[j].split('*X^').length >= 2 ? array[j].split('*X^')[0] : 1),
+					equ: (array[j].split('*X^').length >= 2 ? checkNbr(array[j].split('*X^')[0]) : 1),
 				}
 			}
 
@@ -286,6 +291,20 @@ function cleanDegree(degree) {
 	}
 
 	return degree;
+}
+
+
+function checkNbr(str) {
+	var save;
+
+	if (str.indexOf("/") >= 0) {
+		save = str.split("/");
+
+		return parseFloat(save[0]/save[1]);
+	}
+	else {
+		return parseFloat(str);
+	}
 }
 
 
