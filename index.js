@@ -41,6 +41,11 @@ function main(argv) {
 			}
 		}
 
+		if (parseFloat(degree[0][first].equ) != degree[0][first].equ) {
+			console.log("Bad equation");
+			process.exit(0);
+		}
+
 	}
 
 	degree = cleanDegree(degree);
