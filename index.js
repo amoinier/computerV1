@@ -119,7 +119,7 @@ function parseDegree(equation) {
 
 		degree[x] = degree[x] || {};
 		for (var j = 0; j < array.length; j++) {
-			if (array[j].match(/X/g).length > 1) {
+			if (array[j].match(/X/g) && array[j].match(/X/g).length > 1) {
 				console.log("Bad equation");
 				process.exit(0);
 			}
