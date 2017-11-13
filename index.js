@@ -119,36 +119,76 @@ function parseDegree(equation) {
 
 		degree[x] = degree[x] || {};
 		for (var j = 0; j < array.length; j++) {
-			if (array[j].match(/X/g) && array[j].match(/X/g).length > 1) {
+			if ((array[j].match(/X/g) && array[j].match(/X/g).length > 1)) {
 				console.log("Bad equation");
 				process.exit(0);
 			}
 
 			var index = equation[x][equation[x].indexOf(array[j]) - 1];
 
-			if (array[j].match(/X\^([0-9])/)) {
-				degree[x][parseFloat(array[j].match(/X\^([0-9])/) ? array[j].match(/X\^([0-9])/)[1] : 0)] = {
-					symbol: index && index.match(/[\-\+]/g) ? index : '+',
-					power: parseFloat(array[j].match(/X\^([0-9])/) ? array[j].match(/X\^([0-9])/)[1] : 0),
-					equ: (array[j].split('*X^').length >= 2 ? checkNbr(array[j].split('*X^')[0]) : 1),
+			if (!degree[x][parseFloat(array[j].match(/X\^([0-9])/) ? array[j].match(/X\^([0-9])/)[1] : 0)]) {
+
+				if (array[j].match(/X\^([0-9])/)) {
+					degree[x][parseFloat(array[j].match(/X\^([0-9])/) ? array[j].match(/X\^([0-9])/)[1] : 0)] = {
+						symbol: index && index.match(/[\-\+]/g) ? index : '+',
+						power: parseFloat(array[j].match(/X\^([0-9])/) ? array[j].match(/X\^([0-9])/)[1] : 0),
+						equ: (array[j].split('*X^').length >= 2 ? checkNbr(array[j].split('*X^')[0]) : 1),
+					}
+				}
+
+				if (parseFloat(array[j]) == array[j]) {
+					degree[x][0] = {
+						symbol: index && index.match(/[\-\+]/g) ? index : '+',
+						power: "0",
+						equ: parseFloat(array[j]),
+					}
+				}
+
+				if (array[j] == "X") {
+					degree[x][1] = {
+						symbol: index && index.match(/[\-\+]/g) ? index : '+',
+						power: "1",
+						equ: 1,
+					}
 				}
 			}
 
-			if (parseFloat(array[j]) == array[j]) {
-				degree[x][0] = {
-					symbol: "+",
-					power: "0",
-					equ: parseFloat(array[j]),
+			else {
+				if (array[j].match(/X\^([0-9])/)) {
+					degree[x][parseFloat(array[j].match(/X\^([0-9])/) ? array[j].match(/X\^([0-9])/)[1] : 0)].equ = parseFloat(degree[x][parseFloat(array[j].match(/X\^([0-9])/) ? array[j].match(/X\^([0-9])/)[1] : 0)].symbol + degree[x][parseFloat(array[j].match(/X\^([0-9])/) ? array[j].match(/X\^([0-9])/)[1] : 0)].equ) + parseFloat((index && index.match(/[\-\+]/g) ? index : '+') + (array[j].split('*X^').length >= 2 ? checkNbr(array[j].split('*X^')[0]) : 1))
+					if (parseFloat(degree[x][parseFloat(array[j].match(/X\^([0-9])/) ? array[j].match(/X\^([0-9])/)[1] : 0)].equ) < 0) {
+						degree[x][parseFloat(array[j].match(/X\^([0-9])/) ? array[j].match(/X\^([0-9])/)[1] : 0)].equ *= -1;
+						degree[x][parseFloat(array[j].match(/X\^([0-9])/) ? array[j].match(/X\^([0-9])/)[1] : 0)].symbol = '-';
+					}
+					else {
+						degree[x][parseFloat(array[j].match(/X\^([0-9])/) ? array[j].match(/X\^([0-9])/)[1] : 0)].symbol = '+';
+					}
 				}
+
+				if (parseFloat(array[j]) == array[j]) {
+					degree[x][0].equ = parseFloat(degree[x][0].symbol + degree[x][0].equ) + parseFloat((index && index.match(/[\-\+]/g) ? index : '+') + (array[j].split('*X^').length >= 2 ? checkNbr(array[j].split('*X^')[0]) : 1))
+					if (parseFloat(degree[x][0].equ) < 0) {
+						degree[x][0].equ *= -1;
+						degree[x][0].symbol = '-';
+					}
+					else {
+						degree[x][0].symbol = '+';
+					}
+				}
+
+				if (array[j] == "X") {
+					degree[x][1].equ = parseFloat(degree[x][1].symbol + degree[x][1].equ) + parseFloat((index && index.match(/[\-\+]/g) ? index : '+') + 1)
+					if (parseFloat(degree[x][1].equ) < 0) {
+						degree[x][1].equ *= -1;
+						degree[x][1].symbol = '-';
+					}
+					else {
+						degree[x][1].symbol = '+';
+					}
+				}
+
 			}
 
-			if (array[j] == "X") {
-				degree[x][1] = {
-					symbol: "+",
-					power: "1",
-					equ: 1,
-				}
-			}
 		}
 	}
 
@@ -282,9 +322,26 @@ function cleanDegree(degree) {
 
 	if (keys.length != 0) {
 		for (var x = 0; x < keys.length; x++) {
-			degree[0][keys] = degree[1][keys];
-			degree[0][keys].symbol = (degree[0][keys].symbol == "+" ? "-" : "+");
-			delete degree[1][keys]
+			if (degree[0][keys[x]]) {
+				degree[0][keys[x]] = degree[1][keys[x]];
+				degree[0][keys[x]].symbol = (degree[0][keys[x]].symbol == "+" ? "-" : "+");
+				delete degree[1][keys[x]]
+			}
+			else {
+				if (degree[1][keys[x]].equ == 0) {
+					delete degree[1][keys[x]];
+				}
+				else {
+					degree[0][keys[x]] = {
+						symbol: (degree[1][keys[x]].symbol == "+" ? "-" : "+"),
+						equ: degree[1][keys[x]].equ,
+					}
+
+					if (degree[1][keys[x]].power || parseFloat(degree[1][keys[x]].power) >= 0) {
+						degree[0][keys[x]].power = degree[1][keys[x]].power;
+					}
+				}
+			}
 		}
 	}
 
