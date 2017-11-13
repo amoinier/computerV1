@@ -127,7 +127,6 @@ function parseDegree(equation) {
 			var index = equation[x][equation[x].indexOf(array[j]) - 1];
 
 			if (!degree[x][parseFloat(array[j].match(/X\^([0-9])/) ? array[j].match(/X\^([0-9])/)[1] : 0)]) {
-
 				if (array[j].match(/X\^([0-9])/)) {
 					degree[x][parseFloat(array[j].match(/X\^([0-9])/) ? array[j].match(/X\^([0-9])/)[1] : 0)] = {
 						symbol: index && index.match(/[\-\+]/g) ? index : '+',
@@ -152,7 +151,6 @@ function parseDegree(equation) {
 					}
 				}
 			}
-
 			else {
 				if (array[j].match(/X\^([0-9])/)) {
 					degree[x][parseFloat(array[j].match(/X\^([0-9])/) ? array[j].match(/X\^([0-9])/)[1] : 0)].equ = parseFloat(degree[x][parseFloat(array[j].match(/X\^([0-9])/) ? array[j].match(/X\^([0-9])/)[1] : 0)].symbol + degree[x][parseFloat(array[j].match(/X\^([0-9])/) ? array[j].match(/X\^([0-9])/)[1] : 0)].equ) + parseFloat((index && index.match(/[\-\+]/g) ? index : '+') + (array[j].split('*X^').length >= 2 ? checkNbr(array[j].split('*X^')[0]) : 1))
@@ -166,7 +164,7 @@ function parseDegree(equation) {
 				}
 
 				if (parseFloat(array[j]) == array[j]) {
-					degree[x][0].equ = parseFloat(degree[x][0].symbol + degree[x][0].equ) + parseFloat((index && index.match(/[\-\+]/g) ? index : '+') + (array[j].split('*X^').length >= 2 ? checkNbr(array[j].split('*X^')[0]) : 1))
+					degree[x][0].equ = parseFloat(degree[x][0].symbol + degree[x][0].equ) + parseFloat((index && index.match(/[\-\+]/g) ? index : '+') + parseFloat(array[j]))
 					if (parseFloat(degree[x][0].equ) < 0) {
 						degree[x][0].equ *= -1;
 						degree[x][0].symbol = '-';
@@ -177,7 +175,15 @@ function parseDegree(equation) {
 				}
 
 				if (array[j] == "X") {
-					degree[x][1].equ = parseFloat(degree[x][1].symbol + degree[x][1].equ) + parseFloat((index && index.match(/[\-\+]/g) ? index : '+') + 1)
+					if (degree[x][1]) {
+						degree[x][1].equ = parseFloat(degree[x][1].symbol + degree[x][1].equ) + parseFloat((index && index.match(/[\-\+]/g) ? index : '+') + 1)
+					}
+					else {
+						degree[x][1] = {
+							equ: 1,
+							power: 1,
+						}
+					}
 					if (parseFloat(degree[x][1].equ) < 0) {
 						degree[x][1].equ *= -1;
 						degree[x][1].symbol = '-';
